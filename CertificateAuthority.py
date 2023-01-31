@@ -1,8 +1,9 @@
-from OpenSSL import crypto
+import cryptography as crypto
 from socket import gethostname
 import uuid
 from Rsa import HelperRsa
 import os
+
 
 class CertificateAuthority:
 
@@ -10,7 +11,7 @@ class CertificateAuthority:
     def create_certificate_from_req(
             username, certificate_request, validity_end_in_seconds=10 * 365 * 24 * 60 * 60
     ):
-        k = HelperRsa.load_private_key('data path')
+        k = HelperRsa.load_private_key('./private.pem')
         cert = crypto.X509()
         cert.get_subject().C = certificate_request.get_subject().C
         cert.get_subject().ST = certificate_request.get_subject().ST
@@ -63,6 +64,7 @@ class CertificateAuthority:
             f.write(
                 crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode("utf-8"))
 
+        
     @staticmethod
     def get_app_path():
         abs_path = os.path.abspath(__file__)

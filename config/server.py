@@ -18,6 +18,10 @@ class Server:
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 8192)
         self.socket.bind((SERVER_PATH, SERVER_PORT))
         self.generate_rsa_key()
+       # Write the private key to a file
+        with open('private.pem', 'wb') as f:
+            f.write(rsa.PrivateKey.save_pkcs1(self.private_key, format='PEM'))
+
         # 2 types of clients
         self.anonymous_clients = []
         self.authorized_clients = []

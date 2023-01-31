@@ -1,7 +1,15 @@
+import os
 import tkinter as tk
 from config.message import Message
 import customtkinter
 from tkinter import messagebox
+import ssl
+import CertificateAuthority as CA
+import cryptography
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography import x509
 
 class LoginPage:
     def __init__(self, context):
@@ -55,11 +63,48 @@ class LoginPage:
         passwordL.grid(row=2, column=0)
         passwordInput.grid(row=2, column=1, pady=20)
 
+   
+    """ 
+    def request_certificate(user,self):
+        # Generate a certificate request for the user
+        subject = x509.Name([
+                x509.NameAttribute(x509.oid.NameOID.COMMON_NAME, u"example.com"),
+            ])
+        csr = x509.CertificateSigningRequestBuilder().subject_name(
+                subject
+            ).add_extension(
+                x509.SubjectAlternativeName([x509.DNSName(u"localhost")]),
+                critical=False,
+            ).sign(
+                self.context.client.private_key,
+                cryptography.hazmat.primitives.hashes.SHA256(),
+                default_backend()
+            )
+
+        csr_pem = csr.public_bytes(serialization.Encoding.PEM)
+
+        with open("certificate_request.pem", "wb") as f:
+            f.write(csr_pem)
+            
+        CA.create_certificate_from_req(user.username,csr_pem)
+        # Save the certificate request for the user
+        with open(f'{user}.csr', 'wb') as f:
+            f.write(cert_request)
+
+        # Issue the certificate if it has been requested
+        if os.path.exists(f'{user}.csr'):
+            with open(f'{user}.csr', 'rb') as f:
+                cert_request = f.read()
+            cert = CA.issue_certificate(user, cert_request)
+    """
+        
     def login(self):
         login_object = {
             'username': self.username.get(),
             'password': self.password.get()
         }
+        # self.request_certificate(self)
+       
         message = Message('LOGIN', login_object)
         Message.send_encrypted_message(
             self.context.client.server_socket,
